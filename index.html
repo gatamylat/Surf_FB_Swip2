@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏄</text></svg>">
 <meta name="theme-color" content="#f8f7f2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -192,7 +193,7 @@ html.dark .login-tabs{background:rgba(255,255,255,.06)}
 .day-empty{text-align:center;padding:40px 16px;color:var(--t3);font-size:13px}
 /* Swipe List Item (iOS Mail pattern) — shared for День and Все */
 .swi{position:relative;overflow:hidden;margin:0 12px 4px;border-radius:10px}
-.swa{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap}
+.swa{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;color:#fff;white-space:nowrap;opacity:0;transition:opacity .1s}
 .swa-l{left:0;background:var(--green);border-radius:10px 0 0 10px;width:50%;justify-content:flex-start}.swa-l::after{content:'✓ Готово'}
 .swa-r{right:0;background:var(--red);border-radius:0 10px 10px 0;width:50%;justify-content:flex-end}.swa-r::after{content:'✕ Убрать'}
 .swc{position:relative;z-index:1;background:var(--card);padding:11px 14px;display:flex;align-items:flex-start;gap:8px;will-change:transform;transition:transform .35s var(--spring);touch-action:pan-y;border-radius:10px;box-shadow:var(--sh)}
@@ -203,7 +204,7 @@ html.dark .login-tabs{background:rgba(255,255,255,.06)}
 .sw-txt{flex:1;font-size:15px;font-weight:500;line-height:1.35;color:var(--text);letter-spacing:-.1px;min-width:0;word-break:break-word;padding-top:2px}
 .sw-done .sw-txt{color:var(--t3);text-decoration:line-through}
 .sw-pri{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:7px}.sw-pri.high{background:var(--red)}.sw-pri.medium{background:var(--orange)}
-.sw-proj{font-size:10px;color:var(--t3);flex-shrink:0;padding-top:4px}
+.sw-proj{font-size:10px;color:var(--t3);flex-shrink:0;padding-top:4px}.sw-overdue{font-size:10px;color:var(--red);flex-shrink:0;padding-top:4px;font-weight:600}
 .sw-link{flex:1;font-size:15px;color:var(--accent);text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;min-width:0;word-break:break-word;padding-top:2px}
 .sw-done .sw-link{color:var(--t3);text-decoration:line-through}
 
@@ -589,7 +590,7 @@ function generateRoomCode(){const c='abcdefghjkmnpqrstuvwxyz23456789';let code='
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
 function isMobile(){return window.innerWidth<600||'ontouchstart' in window||navigator.maxTouchPoints>0}
 function pC(i){return CL[((i%CL.length)+CL.length)%CL.length]}
-function resetExpiredToday(){var today=getToday(),changed=false;T.forEach(function(t){if(t.today&&t.today!==today){t.today='';t.unplanned=false;changed=true}});PT.forEach(function(t){if(t.today&&t.today!==today){t.today='';t.unplanned=false;changed=true}});if(changed)saveAll()}
+function resetExpiredToday(){var today=getToday(),changed=false;T.forEach(function(t){if(t.today&&t.today!==today){if(!t.done){t.today=today;t.overdue=true}else{t.today='';t.unplanned=false}changed=true}});PT.forEach(function(t){if(t.today&&t.today!==today){if(!t.done){t.today=today;t.overdue=true}else{t.today='';t.unplanned=false}changed=true}});if(changed)saveAll()}
 
 // ═══ FIREBASE ═══
 function initFirebase(){try{firebase.initializeApp(FB_CONFIG);fbDb=firebase.firestore();fbAuth=firebase.auth();fbAuth.signInAnonymously().then(function(r){fbUser=r.user;fbEnabled=true;updateFbDot('online');loadFromFirebase()}).catch(function(e){fbEnabled=false;updateFbDot('offline')})}catch(e){fbEnabled=false;updateFbDot('offline')}}
@@ -846,8 +847,8 @@ function getDayItems(){
   var items=[];
   (R.morning||[]).forEach(function(r){items.push({id:r.id,text:r.text,link:r.link,type:'ritual',block:'morning',checked:!!R.checks[r.id]})});
   var td=getToday();
-  T.filter(function(t){return t.today===td}).forEach(function(t){items.push({id:t.id,text:t.text,type:'task',checked:t.done,pri:t.pri,project:t.project,unplanned:t.unplanned})});
-  PT.filter(function(t){return t.today===td}).forEach(function(t){items.push({id:t.id,text:t.text,type:'personal',checked:t.done,unplanned:t.unplanned})});
+  T.filter(function(t){return t.today===td}).forEach(function(t){items.push({id:t.id,text:t.text,type:'task',checked:t.done,pri:t.pri,project:t.project,unplanned:t.unplanned,overdue:t.overdue})});
+  PT.filter(function(t){return t.today===td}).forEach(function(t){items.push({id:t.id,text:t.text,type:'personal',checked:t.done,unplanned:t.unplanned,overdue:t.overdue})});
   (R.evening||[]).forEach(function(r){items.push({id:r.id,text:r.text,link:r.link,type:'ritual',block:'evening',checked:!!R.checks[r.id]})});
   return items;
 }
@@ -877,12 +878,15 @@ function rDay(){
       var swc=row.querySelector('.swc');var id=row.dataset.id;var type=row.dataset.type;
       var g=regGesture(new TinyGesture(swc,{pressThreshold:8}));
       var dx=0,dir=null;
+      var sl=row.querySelector('.swa-l'),sr=row.querySelector('.swa-r');
       g.on('panmove',function(){
         if(dir===null){if(Math.abs(g.touchMoveX)>8)dir='h';else if(Math.abs(g.touchMoveY)>8){dir='v';return}else return}
         if(dir!=='h')return;dx=g.touchMoveX*0.7;swc.classList.add('dragging');swc.style.transform='translateX('+dx+'px)';
+        var p=Math.min(Math.abs(dx)/80,1);
+        if(dx>10){sl.style.opacity=p;sr.style.opacity=0}else if(dx<-10){sr.style.opacity=p;sl.style.opacity=0}else{sl.style.opacity=0;sr.style.opacity=0}
       });
       g.on('panend',function(){
-        swc.classList.remove('dragging');var vx=Math.abs(g.velocityX||0);
+        swc.classList.remove('dragging');sl.style.opacity=0;sr.style.opacity=0;var vx=Math.abs(g.velocityX||0);
         if(dx>80||(dx>40&&vx>1.5)){haptic();swc.style.transform='translateX(120%)';setTimeout(function(){dayToggle(id,type,true)},250)}
         else if(dx<-80||(dx<-40&&vx>1.5)){haptic();swc.style.transform='translateX(-120%)';setTimeout(function(){if(type==='task'||type==='personal')dayRemoveFromToday(id,type);else dayToggle(id,type,true)},250)}
         else{swc.style.transform=''}
@@ -900,8 +904,9 @@ function swiHTML(it){
   if(it.project){projH='<span class="sw-proj">'+esc(it.project)+'</span>'}
   if(it.type==='personal')projH='<span class="sw-proj">личная</span>';
   var fireH=it.unplanned?'<span style="font-size:11px">🔥</span>':'';
+  var overdueH=it.overdue&&!it.checked?'<span class="sw-overdue">вчера</span>':'';
   var textH=it.link?'<a class="sw-link" href="'+esc(it.link)+'" target="_blank" onclick="event.stopPropagation()">'+esc(it.text)+'</a>':'<span class="sw-txt">'+esc(it.text)+'</span>';
-  return'<div class="swi '+cls+'" data-id="'+it.id+'" data-type="'+it.type+'"><div class="swa swa-l"></div><div class="swa swa-r"></div><div class="swc">'+priH+'<div class="sw-chk '+chk+'">'+CHK+'</div>'+textH+fireH+projH+'</div></div>';
+  return'<div class="swi '+cls+'" data-id="'+it.id+'" data-type="'+it.type+'"><div class="swa swa-l"></div><div class="swa swa-r"></div><div class="swc">'+priH+'<div class="sw-chk '+chk+'">'+CHK+'</div>'+textH+fireH+overdueH+projH+'</div></div>';
 }
 function dayToggle(id,type,fromSwipe){
   if(type==='ritual'){R.checks[id]=!R.checks[id];saveAll();if(!fromSwipe)rDay();else setTimeout(rDay,100);toast(R.checks[id]?'✓':'↩')}
