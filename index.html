@@ -576,7 +576,7 @@ var _lastSyncTimestamp=0,_saveDebounceTimer=null,_ownWriteId='';
 var tab='day',sub='cards',proj='all',view='tasks';
 var ddOpen=false,sbOpen=false,qaOpen=false,fireMode=false,ptabsOpen=false;
 var flowProj='all';
-var showDone=true,showDoneP=true,showInactive=false;
+var showDone=true,showDoneP=true,showDoneDay=true,showInactive=false;
 var taskQ='',allQ='',_projCtxTarget=null,lastDel=null;
 var darkMode=false;
 var focusTask=null,focusInterval=null,focusTotal=0,focusRemaining=0,focusPaused=false;
@@ -834,6 +834,7 @@ function addPersonal(inp){var v=inp.value.trim();if(!v)return;PT.push({id:'p'+Da
 // ═══ PERSONAL ═══
 function rPersonal(){var el=document.getElementById('pv-list'),active=PT.filter(function(t){return!t.done}),done=PT.filter(function(t){return t.done});document.getElementById('pv-cnt').textContent=active.length+' активных';if(!PT.length){el.innerHTML='<div class="emp"><h3>Пусто</h3><p>Добавь личную задачу</p></div>';return}var h='';active.forEach(function(t){h+=pLH(t)});if(done.length){h+='<div class="sh">Готово · '+done.length+'<button onclick="tglShowP()">'+(showDoneP?'скрыть':'показать')+'</button></div>';if(showDoneP)done.forEach(function(t){h+=pLH(t)})}el.innerHTML=h}
 function tglShowP(){showDoneP=!showDoneP;rPersonal()}
+function tglShowDay(){showDoneDay=!showDoneDay;rDay()}
 function pLH(t){return'<div class="li '+(t.done?'dn':'')+'" data-pid="'+t.id+'"><div class="lk" onclick="event.stopPropagation();tglDoneP(\''+t.id+'\')">'+CHK+'</div><div class="lt" contenteditable="'+(t.done?'false':'true')+'" data-pid="'+t.id+'" onblur="onEditP(this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(t.text)+'</div>'+(t.unplanned&&t.today===getToday()?'<span class="unplanned-badge">🔥</span>':'')+starHTML(t,'PT')+'<div class="ldel" onclick="event.stopPropagation();delPersonal(\''+t.id+'\')">'+XS+'</div></div>'}
 function tglDoneP(id){var t=PT.find(function(x){return x.id===id});if(!t)return;t.done=!t.done;haptic();saveAll();toast(t.done?'✓':'↩');rPersonal();if(sub==='today')rToday()}
 function delPersonal(id){var i=PT.findIndex(function(x){return x.id===id});if(i<0)return;var task=PT.splice(i,1)[0];TRASH.push({type:'personal',item:task,deletedAt:Date.now()});lastDel={arr:'PT',task:task};haptic();saveAll();toast('В корзину',true);rPersonal();if(sub==='today')rToday()}
@@ -854,14 +855,19 @@ function rDay(){
   destroyGestures();
   var el=document.getElementById('dayScroll');
   var items=getDayItems();
-  var total=items.length,done=items.filter(function(x){return x.checked}).length;
-  var pct=total?Math.round(done/total*100):0;
+  var total=items.length,doneCount=items.filter(function(x){return x.checked}).length;
+  var pct=total?Math.round(doneCount/total*100):0;
   var h='<div class="day-prog"><div class="day-bar"><div class="day-bar-fill" style="width:'+pct+'%"></div></div><div class="day-pct">'+pct+'%</div></div>';
-  var curBlock='';
-  items.forEach(function(it){
-    var block=it.block||(it.type==='personal'?'today':'today');
-    if(block!==curBlock){curBlock=block;var label=block==='morning'?'Утро':block==='evening'?'Вечер':'Сегодня';h+='<div class="day-sec">'+label+'<div class="day-sec-line"></div></div>'}
-    h+=swiHTML(it);
+  if(doneCount){h+='<div class="sh">Готово · '+doneCount+'<button onclick="tglShowDay()">'+(showDoneDay?'скрыть':'показать')+'</button></div>';}
+  var blocks=[],blockMap={};
+  items.forEach(function(it){var b=it.block||'today';if(!blockMap[b]){blockMap[b]={name:b,un:[],dn:[]};blocks.push(blockMap[b])}if(it.checked)blockMap[b].dn.push(it);else blockMap[b].un.push(it)});
+  blocks.forEach(function(b){
+    if(!b.un.length&&!b.dn.length)return;
+    if(!b.un.length&&!showDoneDay)return;
+    var label=b.name==='morning'?'Утро':b.name==='evening'?'Вечер':'Сегодня';
+    h+='<div class="day-sec">'+label+'<div class="day-sec-line"></div></div>';
+    b.un.forEach(function(it){h+=swiHTML(it)});
+    if(showDoneDay)b.dn.forEach(function(it){h+=swiHTML(it)});
   });
   if(!items.length)h+='<div class="day-empty">Пусто. Отметь задачи ⭐ или добавь ритуал</div>';
   el.innerHTML=h;
