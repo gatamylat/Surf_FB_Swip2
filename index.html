@@ -110,12 +110,13 @@ html.dark .login-tabs{background:rgba(255,255,255,.06)}
 /* ══ CARDS VIEW ══ */
 .cv{display:none;flex-direction:column;flex:1;overflow:hidden}.cv.on{display:flex}
 .cf{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 8px 80px}.cf::-webkit-scrollbar{display:none}
-.cc{position:relative;margin:4px 0;border-radius:10px;overflow:hidden;will-change:transform;transition:transform .35s var(--spring),opacity .25s,max-height .3s,margin .3s,padding .3s}
+.cc{position:relative;margin:4px 0;border-radius:10px;overflow:hidden;will-change:transform;transition:opacity .25s,max-height .3s,margin .3s,padding .3s}
+.cc-inner{position:relative;z-index:1;background:var(--card);border-radius:10px;will-change:transform;transition:transform .35s var(--spring)}
 .cc.dragging{transition:none}
 .cc.ph{border-left:3px solid var(--red)}.cc.pm{border-left:3px solid var(--orange)}
-.sl,.sr{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding:0 14px;color:#fff}
-.sl{left:0;background:var(--green);width:50%;border-radius:10px 0 0 10px;justify-content:flex-start}.sl svg{width:16px;height:16px}
-.sr{right:0;background:var(--red);width:50%;border-radius:0 10px 10px 0;justify-content:flex-end}.sr svg{width:14px;height:14px}
+.sl,.sr{position:absolute;top:0;bottom:0;display:flex;align-items:center;padding:0 14px;color:#fff;opacity:0;transition:opacity .1s;font-size:13px;font-weight:600;gap:6px}
+.sl{left:0;background:var(--green);width:50%;border-radius:10px 0 0 10px;justify-content:flex-start}.sl svg{width:16px;height:16px;flex-shrink:0}
+.sr{right:0;background:var(--red);width:50%;border-radius:0 10px 10px 0;justify-content:flex-end}.sr svg{width:14px;height:14px;flex-shrink:0}
 .cc-row{position:relative;z-index:1;background:var(--card);padding:10px 14px;display:flex;align-items:flex-start;gap:8px;border-radius:10px;box-shadow:var(--sh);min-height:42px}
 .cc-t{flex:1;font-size:14px;font-weight:500;line-height:1.35;letter-spacing:-.1px;min-width:0;word-break:break-word;padding-top:1px}
 .cc.dn .cc-t{color:var(--t3);text-decoration:line-through}
@@ -765,29 +766,30 @@ function rDD(q){q=q||'';var el=document.getElementById('proj-list'),ql=q.toLower
 // ═══ CARDS ═══
 function secH(n,c){return'<div class="sec"><div class="sec-row"><div class="sec-name" contenteditable="true" data-orig="'+esc(n)+'" spellcheck="false">'+esc(n)+'</div><span class="sec-cnt">'+c+'</span></div></div>'}
 function starHTML(t,pool){var isT=t.today===getToday();return'<div class="star-btn '+(isT?'on':'')+'" onclick="event.stopPropagation();tglToday(\''+t.id+'\',\''+pool+'\')" title="На сегодня">⭐</div>'}
-function cH(t){return'<div class="cc '+(t.pri==='high'?'ph':t.pri==='medium'?'pm':'')+' '+(t.done?'dn':'')+'" data-id="'+t.id+'"><div class="sl">'+CHK+'</div><div class="sr">'+XS+'</div><div class="cc-row"><div class="cc-t">'+esc(t.text)+'</div>'+(t.unplanned&&t.today===getToday()?'<span class="unplanned-badge">🔥</span>':'')+starHTML(t,'T')+'</div></div>'}
+function cH(t){return'<div class="cc '+(t.pri==='high'?'ph':t.pri==='medium'?'pm':'')+' '+(t.done?'dn':'')+'" data-id="'+t.id+'"><div class="sl">'+CHK+' Готово</div><div class="sr">Удалить '+XS+'</div><div class="cc-inner"><div class="cc-row"><div class="cc-t">'+esc(t.text)+'</div>'+(t.unplanned&&t.today===getToday()?'<span class="unplanned-badge">🔥</span>':'')+starHTML(t,'T')+'</div></div></div>'}
 function lH(t){return'<div class="li '+(t.done?'dn':'')+'" data-id="'+t.id+'"><div class="lp '+t.pri+'"></div><div class="lk" onclick="event.stopPropagation();tglDone(\''+t.id+'\')">'+CHK+'</div><div class="lt" contenteditable="'+(t.done?'false':'true')+'" data-id="'+t.id+'" onblur="onEdit(this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(t.text)+'</div>'+(t.unplanned&&t.today===getToday()?'<span class="unplanned-badge">🔥</span>':'')+starHTML(t,'T')+'<div class="ldel" onclick="event.stopPropagation();delTask(\''+t.id+'\')" title="Удалить">'+XS+'</div><div class="ldh">'+GRIP+'</div></div>'}
 function rCards(){destroyGestures();var el=document.getElementById('cf'),items=fil();if(!items.length){el.innerHTML='<div class="emp"><h3>Пусто</h3><p>Нажми + внизу</p></div>';return}if(proj!=='all'){var u=items.filter(function(t){return!t.done}),d=items.filter(function(t){return t.done}),h='';u.forEach(function(t){h+=cH(t)});if(d.length){h+='<div class="sh">Готово · '+d.length+'<button onclick="tglShow()">'+(showDone?'скрыть':'показать')+'</button></div>';if(showDone)d.forEach(function(t){h+=cH(t)})}el.innerHTML=h;el.querySelectorAll('.cc').forEach(function(c){swipeCard(c)});return}var gr=grouped(items),h='';gr.forEach(function(g){if(!g.un.length&&!showDone)return;h+=secH(g.name,g.un.length);g.un.forEach(function(t){h+=cH(t)});if(g.dn.length&&showDone)g.dn.forEach(function(t){h+=cH(t)})});el.innerHTML=h;el.querySelectorAll('.cc').forEach(function(c){swipeCard(c)});el.querySelectorAll('.sec-name').forEach(function(n){bindRename(n)})}
 function rList(){destroyGestures();var el=document.getElementById('ls'),items=fil();if(!items.length){el.innerHTML='<div class="emp"><h3>Пусто</h3><p>Печатай вверху</p></div>';return}if(proj!=='all'){var u=items.filter(function(t){return!t.done}),d=items.filter(function(t){return t.done}),h='';u.forEach(function(t){h+=lH(t)});if(d.length){h+='<div class="sh">Готово · '+d.length+'<button onclick="tglShow()">'+(showDone?'скрыть':'показать')+'</button></div>';if(showDone)d.forEach(function(t){h+=lH(t)})}el.innerHTML=h;initDrag(el);return}var gr=grouped(items),h='';gr.forEach(function(g){if(!g.un.length&&!showDone)return;h+=secH(g.name,g.un.length);g.un.forEach(function(t){h+=lH(t)});if(g.dn.length&&showDone)g.dn.forEach(function(t){h+=lH(t)})});el.innerHTML=h;el.querySelectorAll('.sec-name').forEach(function(n){bindRename(n)});initDrag(el)}
 
 // ═══ SWIPE CARD — TinyGesture 3.0 ═══
 function swipeCard(card){
+  var inner=card.querySelector('.cc-inner');
   var g=regGesture(new TinyGesture(card,{pressThreshold:8}));
   var dx=0,dir=null,sl=card.querySelector('.sl'),sr=card.querySelector('.sr');
   var THR=80;
   g.on('panmove',function(){
     if(dir===null){if(Math.abs(g.touchMoveX)>8)dir='h';else if(Math.abs(g.touchMoveY)>8){dir='v';return}else return}
     if(dir!=='h')return;
-    dx=g.touchMoveX*0.55;card.classList.add('dragging');card.style.transform='translateX('+dx+'px)';
+    dx=g.touchMoveX*0.55;card.classList.add('dragging');inner.style.transform='translateX('+dx+'px)';
     var p=Math.min(Math.abs(dx)/THR,1);
     if(dx>10){sl.style.opacity=p;sr.style.opacity=0}else if(dx<-10){sr.style.opacity=p;sl.style.opacity=0}else{sl.style.opacity=0;sr.style.opacity=0}
   });
   g.on('panend',function(){
     card.classList.remove('dragging');sl.style.opacity=0;sr.style.opacity=0;
     var id=card.dataset.id,vx=Math.abs(g.velocityX||0);
-    if(dx>THR||(dx>40&&vx>1.5)){haptic();card.style.transform='translateX(110%)';card.style.opacity='0';setTimeout(function(){card.style.maxHeight='0';card.style.margin='0';card.style.padding='0';card.style.overflow='hidden';setTimeout(function(){tglDone(id)},150)},200)}
-    else if(dx<-THR||(dx<-40&&vx>1.5)){haptic();card.style.transform='translateX(-110%)';card.style.opacity='0';setTimeout(function(){card.style.maxHeight='0';card.style.margin='0';card.style.padding='0';card.style.overflow='hidden';setTimeout(function(){delTask(id)},150)},200)}
-    else{card.style.transform=''}
+    if(dx>THR||(dx>40&&vx>1.5)){haptic();inner.style.transform='translateX(110%)';card.style.opacity='0';setTimeout(function(){card.style.maxHeight='0';card.style.margin='0';card.style.padding='0';card.style.overflow='hidden';setTimeout(function(){tglDone(id)},150)},200)}
+    else if(dx<-THR||(dx<-40&&vx>1.5)){haptic();inner.style.transform='translateX(-110%)';card.style.opacity='0';setTimeout(function(){card.style.maxHeight='0';card.style.margin='0';card.style.padding='0';card.style.overflow='hidden';setTimeout(function(){delTask(id)},150)},200)}
+    else{inner.style.transform=''}
     dx=0;dir=null;
   });
 }
