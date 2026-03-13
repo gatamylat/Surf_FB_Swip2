@@ -313,7 +313,7 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 .oper-mode{border:none;background:0;font-family:var(--f);font-size:11px;font-weight:500;color:var(--t2);cursor:pointer;padding:5px 10px;border-radius:6px;transition:all .15s;white-space:nowrap}.oper-mode.on{color:var(--text);background:var(--card);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .oper-btns{display:flex;gap:4px}
 .oper-btn{width:32px;height:32px;border:1px solid var(--brd);border-radius:8px;background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .15s}.oper-btn:active{transform:scale(.9)}
-.oper-chips{display:flex;gap:4px;overflow-x:auto;padding:4px 16px;flex-shrink:0}.oper-chips::-webkit-scrollbar{display:none}
+.oper-chips-wrap{display:flex;align-items:center;gap:0;flex-shrink:0}.oper-chips-arrow{width:28px;height:28px;border:none;background:var(--card);border:1px solid var(--brd);border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:4px 2px}.oper-chips-arrow:active{opacity:.6}.oper-chips{display:flex;gap:4px;overflow-x:auto;padding:4px 8px;flex:1;flex-shrink:0}.oper-chips::-webkit-scrollbar{display:none}
 .oper-chip{border:1.5px solid var(--brd);background:var(--card);border-radius:16px;padding:4px 10px;font-family:var(--f);font-size:10px;font-weight:500;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}.oper-chip.on{border-color:var(--accent);color:var(--accent);background:var(--abg)}.oper-chip:active{transform:scale(.93)}
 .flow-chips{display:flex;gap:6px;overflow-x:auto;padding:6px 16px;flex-shrink:0;-webkit-overflow-scrolling:touch}.flow-chips::-webkit-scrollbar{display:none}
 .flow-chip{display:flex;align-items:center;gap:5px;border:1.5px solid var(--brd);background:var(--card);border-radius:20px;padding:5px 12px;font-family:var(--f);font-size:11px;font-weight:500;color:var(--t2);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}.flow-chip:active{transform:scale(.93)}.flow-chip.on{border-color:var(--accent);color:var(--accent);background:var(--abg)}
@@ -431,7 +431,8 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 <div class="menu-item" onclick="doPush();toggleMenu()">☁️ Отправить в облако</div>
 <div class="menu-item" onclick="doForceLoad();toggleMenu()">⬇️ Загрузить из облака</div>
 <div class="menu-item" onclick="doShowStatus();toggleMenu()">📡 Статус Firebase</div>
-<div class="menu-item" onclick="doExport();toggleMenu()">📤 Экспорт текст</div>
+<div class="menu-item" onclick="doExport();toggleMenu()">📤 Экспорт текст (все)</div>
+<div class="menu-item" onclick="doExportProject();toggleMenu()">📤 Экспорт текст (проект)</div>
 <div class="menu-item" onclick="doExportJSON();toggleMenu()">💾 Экспорт JSON</div>
 <div class="menu-item" onclick="doImportJSON();toggleMenu()">📥 Импорт JSON</div>
 <div class="menu-item" onclick="setTab('ritual');toggleMenu()">🌅 Редактор ритуала</div>
@@ -500,7 +501,7 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 <button class="oper-btn" onclick="operCopy()">📋</button>
 <button class="oper-btn" onclick="operImportShow()">📥</button>
 </div></div>
-<div class="oper-chips" id="operChips"></div>
+<div class="oper-chips-wrap"><button class="oper-chips-arrow" onclick="operChipsScroll(-120)">‹</button><div class="oper-chips" id="operChips"></div><button class="oper-chips-arrow" onclick="operChipsScroll(120)">›</button></div>
 <div class="oper-scroll" id="operScroll"></div>
 </div>
 <div class="oper-imp-ov" id="operImpOv" onclick="if(event.target===this)operImportHide()">
@@ -568,7 +569,7 @@ var APP_NAME='surf-tasks';
 
 // ═══ GLOBALS ═══
 var T=[],P=[],R={morning:[],evening:[],checks:{},lastReset:''},PT=[],TRASH=[],notesText='';
-var DEPTS_DEFAULT=['Без даты','Отгрузки','Монтажи','Столяры','ЧПУ','Шлифовка','Малярка','Сборка'];
+var DEPTS_DEFAULT=['Без даты','Отгрузки','Доставка','Монтажи','Столяры','ЧПУ','Шлифовка','Малярка','Сборка'];
 var DEPTS_SUPPORT=['Снабжение','Конструкторы','Менеджеры'];
 var DEPTS=DEPTS_DEFAULT.concat(DEPTS_SUPPORT);
 var operMode='dept',operDepts=[];
@@ -1112,6 +1113,30 @@ function clearTrash(){if(!TRASH.length){toast('Пусто');return}if(!confirm('
 
 // ═══ EXPORT / IMPORT ═══
 function doExport(){var groups={};T.forEach(function(t){if(!groups[t.project])groups[t.project]=[];groups[t.project].push(t)});var text='Surf · '+userName+'\n\n';Object.keys(groups).sort().forEach(function(p){text+=p+'\n';groups[p].forEach(function(t){text+='  '+(t.done?'✓':'○')+' '+t.text+(t.today===getToday()?' ⭐':'')+'\n'});text+='\n'});if(navigator.share)navigator.share({text:text}).catch(function(){});else{var b=new Blob([text],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='surf.txt';a.click();URL.revokeObjectURL(u)}toast('📦')}
+function doExportProject(){
+  var p=proj==='all'?(P.length?P[0].name:''):proj;
+  var items=T.filter(function(t){return t.project===p});
+  if(!items.length){toast('Нет задач в проекте');return}
+  var u=items.filter(function(t){return!t.done}),d=items.filter(function(t){return t.done});
+  var text='Surf · '+p+'\n'+new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+'\n\n';
+  u.forEach(function(t){text+='[ ] '+t.text+(t.today===getToday()?' ⭐':'')+'\n'});
+  if(d.length){text+='\nГотово:\n';d.forEach(function(t){text+='[x] '+t.text+'\n'})}
+  if(navigator.share)navigator.share({text:text}).catch(function(){});
+  else{var b=new Blob([text],{type:'text/plain'}),url=URL.createObjectURL(b),a=document.createElement('a');a.href=url;a.download=p+'.txt';a.click();URL.revokeObjectURL(url)}
+  toast('📦 '+p)
+}
+function doExportProject(){
+  var p=proj==='all'?null:proj;
+  var tasks=p?T.filter(function(t){return t.project===p}):T;
+  var name=p||'Все проекты';
+  var text='Surf · '+userName+' · '+name+'\n\n';
+  var active=tasks.filter(function(t){return!t.done}),done=tasks.filter(function(t){return t.done});
+  active.forEach(function(t){text+='[ ] '+t.text+(t.today===getToday()?' ⭐':'')+'\n'});
+  if(done.length){text+='\n— Выполнено —\n';done.forEach(function(t){text+='[x] '+t.text+'\n'})}
+  if(navigator.share)navigator.share({text:text}).catch(function(){});
+  else{var b=new Blob([text],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='surf-'+name+'.txt';a.click();URL.revokeObjectURL(u)}
+  toast('📦 '+name)
+}
 function doExportJSON(){var data={tasks:T,projects:P,ritual:R,notes:notesText,personalTasks:PT,trash:TRASH,user:userName,mode:appMode,room:roomCode,exportDate:new Date().toISOString()};var b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='surf-backup.json';a.click();URL.revokeObjectURL(u);toast('💾 JSON')}
 function doImportJSON(){document.getElementById('imp-file').click()}
 document.getElementById('imp-file').addEventListener('change',function(e){var file=e.target.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(ev){try{var d=JSON.parse(ev.target.result);if(d.tasks)T=d.tasks;if(d.projects)P=d.projects;if(d.ritual)R=d.ritual;if(typeof d.notes==='string')notesText=d.notes;if(d.personalTasks)PT=d.personalTasks;if(d.trash)TRASH=d.trash;saveAll();toast('📥 Импортировано');setTab(tab)}catch(err){toast('Ошибка формата')}};reader.readAsText(file);e.target.value=''});
@@ -1147,6 +1172,7 @@ function rOperChips(){var el=document.getElementById('operChips');
   DEPTS_SUPPORT.forEach(function(d){var isOn=operDepts.indexOf(d)>=0;var cnt=T.filter(function(t){return!t.done&&t.dept===d}).length;h+='<div class="oper-chip'+(isOn?' on':'')+'" data-dept="'+esc(d)+'" onclick="tglOperDept(this.dataset.dept)">'+esc(d)+' <span style="opacity:.5">'+cnt+'</span></div>'});
   el.innerHTML=h;
 }
+function operChipsScroll(dx){var el=document.getElementById("operChips");if(el)el.scrollBy({left:dx,behavior:"smooth"})}
 function tglOperAll(){if(operDepts.length===DEPTS.length){operDepts=[]}else{operDepts=DEPTS.slice()}haptic();rOper()}
 function operRowHTML(t,showAssignee){var chk=t.done?'on':'';var cls=t.done?'done':'';var projTag=t.project?'<span class="oper-tag" style="background:rgba(0,0,0,.04);color:var(--t2)">'+esc(t.project)+'</span>':'';var assTag=(showAssignee&&t.assignee)?'<span class="oper-tag oper-tag-who">'+esc(t.assignee)+'</span>':'';return'<div class="oper-row" data-id="'+t.id+'"><div class="oper-chk '+chk+'" data-tid="'+t.id+'" onclick="tglOperDone(this.dataset.tid)">'+CHK+'</div><div class="oper-row-text '+cls+'">'+esc(t.text)+'</div><div class="oper-row-meta">'+assTag+projTag+'</div><button class="oper-row-edit" data-tid="'+t.id+'" onclick="teditOpen(this.dataset.tid)">&#9999;&#65039;</button></div>'}
 function tglOperDone(id){var t=T.find(function(x){return x.id===id});if(!t)return;t.done=!t.done;saveAll();haptic();rOper()}
@@ -1186,13 +1212,14 @@ if(operMode==='dept'){
     var assGrp={};deptGrp[dk].forEach(function(t){var a=t.assignee||'';if(!assGrp[a])assGrp[a]=[];assGrp[a].push(t)});
     var assKeys=Object.keys(assGrp).sort(function(a,b){if(!a)return 1;if(!b)return -1;return a.localeCompare(b)});
     assKeys.forEach(function(a){
-      if(a)txt+='   \ud83d\udc64 '+a+':\n';
+      if(a)txt+='\n   '+a+':\n';
       assGrp[a].sort(function(x,y){return(x.project||'').localeCompare(y.project||'')});
       assGrp[a].forEach(function(t){
-        var line='   '+t.text;
+        var line='   [ ] '+t.text;
         if(t.project)line+='  \u2022 '+t.project;
         txt+=line+'\n';
       });
+      txt+='\n';
     });
   });
 } else {
@@ -1200,7 +1227,7 @@ if(operMode==='dept'){
   Object.keys(grp).sort().forEach(function(p){
     txt+='\n\ud83c\udfe0 '+p+' ('+grp[p].length+')\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n';
     grp[p].forEach(function(t){
-      var line='   '+t.text;
+      var line='   [ ] '+t.text;
       if(t.assignee)line+='  \u2014 '+t.assignee;
       if(t.dept)line+='  ['+t.dept+']';
       txt+=line+'\n';
