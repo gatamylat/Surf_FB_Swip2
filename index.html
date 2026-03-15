@@ -393,6 +393,22 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 .sch-imp-hdr{display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:600;margin-bottom:12px}.sch-imp-hdr button{border:none;background:0;font-size:18px;cursor:pointer;color:var(--t2)}
 .sch-imp textarea{flex:1;min-height:200px;border:1.5px solid var(--brd);border-radius:10px;padding:12px;font-family:var(--f);font-size:13px;color:var(--text);background:var(--bg);resize:none;outline:none}.sch-imp textarea:focus{border-color:var(--accent)}
 .sch-imp-go{margin-top:12px;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-family:var(--f);font-size:14px;font-weight:600;cursor:pointer}.sch-imp-go:active{opacity:.8}
+
+.ai-brief-block{margin:0 16px 12px;border-radius:10px;background:var(--abg);border:1.5px solid rgba(26,122,230,.12);overflow:hidden}
+.ai-brief-hdr{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
+.ai-brief-icon{font-size:16px;flex-shrink:0}
+.ai-brief-label{font-size:13px;font-weight:600;color:var(--accent);flex:1}
+.ai-brief-refresh{border:none;background:0;font-size:13px;cursor:pointer;color:var(--accent);opacity:.6;padding:4px;line-height:1}.ai-brief-refresh:active{opacity:1}
+.ai-brief-body{padding:0 12px 12px;font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap;display:none}
+.ai-brief-body.on{display:block}
+.ai-brief-spin{display:inline-block;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-issues-block{margin:0 16px 20px;border-radius:10px;background:var(--card);border:1.5px solid var(--brd);overflow:hidden}
+.ai-issues-body{padding:12px;font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap;display:none}
+.ai-issues-body.on{display:block}
+.menu-ai-row{padding:8px 14px 4px;display:flex;align-items:center;gap:8px;border-top:1px solid var(--brd);margin-top:4px}
+.menu-ai-key{flex:1;padding:6px 8px;border:1.5px solid var(--brd);border-radius:6px;font-family:var(--f);font-size:12px;color:var(--text);background:var(--bg);outline:none}.menu-ai-key:focus{border-color:var(--accent)}
+.menu-ai-save{border:none;background:var(--accent);color:#fff;border-radius:6px;padding:6px 10px;font-family:var(--f);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}.menu-ai-save:active{opacity:.8}
 @media print{body,html{background:#fff!important;color:#000!important;height:auto!important;overflow:visible!important}.app{height:auto!important;overflow:visible!important}.app-main{overflow:visible!important;height:auto!important}.ov-screen{position:static!important;height:auto!important;overflow:visible!important}.oper-chips-wrap,.oper-chips-arrow{display:none!important}.hdr,.bnav,.sb,.ov,.menu-dd,.fab,.qadd,.sub-bar,.proj-bar,.ptabs,.oper-bar,.oper-chips,.oper-row-edit,.tedit-ov,.oper-imp-ov,.flow-filter,.sch-bar,.sch-btns,.sch-card-del,.sch-form-ov,.sch-imp-ov{display:none!important}.ov-screen,.ov-screen.on{display:block!important;overflow:visible!important}.oper-scroll{overflow:visible!important;padding:0!important}.sch-scroll{overflow:visible!important;padding:0!important}.oper-sec{page-break-inside:avoid}.oper-sec-hdr{border-bottom:2px solid #000}.oper-sec-name{font-size:16pt;color:#000}.oper-row{border-bottom:1px solid #ccc}.sch-card{box-shadow:none!important;background:none!important;border-bottom:1px solid #ddd;border-radius:0!important}.sch-card-stripe{display:none!important}.oper-row-text{font-size:11pt;color:#000}.oper-tag{border:1px solid #999;background:#f5f5f5!important;color:#000!important}.print-hdr{display:block!important;text-align:center;padding:10px 0;border-bottom:3px solid #000}.print-hdr h1{font-size:18pt;margin:0}.print-hdr p{font-size:10pt;color:#666;margin:2px 0}}
 .print-hdr{display:none}
 
@@ -484,6 +500,10 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 <div class="menu-item" onclick="sortProjectsAlpha();toggleMenu()">🔤 Сортировать А→Я</div>
 <div class="menu-item" onclick="openTrash();toggleMenu()">🗑 Корзина</div>
 <div class="menu-item" onclick="doLogout();toggleMenu()">🚪 Выйти</div>
+<div class="menu-ai-row">
+  <input class="menu-ai-key" id="aiKeyInput" type="password" placeholder="Claude API key..." autocomplete="off">
+  <button class="menu-ai-save" onclick="aiKeySave()">Сохранить</button>
+</div>
 </div>
 <input type="file" id="imp-file" accept=".json" style="display:none">
 <div class="users-online hidden" id="usersOnline"></div>
@@ -544,9 +564,27 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 </div><div class="oper-btns">
 <button class="oper-btn" onclick="operPrint()">🖨</button>
 <button class="oper-btn" onclick="operCopy()">📋</button>
+<button class="oper-btn" id="aiIssuesBtn" onclick="aiShowIssues()" title="ИИ: что провисает">✨</button>
+<button class="oper-btn" id="aiInventBtn" onclick="aiShowInventory()" title="ИИ: инвентаризация">🔍</button>
 <button class="oper-btn" onclick="operImportShow()">📥</button>
 </div></div>
 <div class="oper-chips-wrap"><button class="oper-chips-arrow" onclick="operChipsScroll(-120)">‹</button><div class="oper-chips" id="operChips"></div><button class="oper-chips-arrow" onclick="operChipsScroll(120)">›</button></div>
+<div class="ai-issues-block" id="aiIssuesBlock" style="display:none">
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--brd)">
+    <span style="font-size:13px;font-weight:600;color:var(--accent);flex:1">✨ ИИ-анализ</span>
+    <button onclick="aiIssuesRefresh()" style="border:none;background:0;font-size:13px;cursor:pointer;color:var(--accent);opacity:.6">↺</button>
+    <button onclick="aiIssuesClose()" style="border:none;background:0;font-size:16px;cursor:pointer;color:var(--t3)">✕</button>
+  </div>
+  <div class="ai-issues-body on" id="aiIssuesBody"></div>
+</div>
+<div class="ai-issues-block" id="aiInventBlock" style="display:none">
+  <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--brd)">
+    <span style="font-size:13px;font-weight:600;color:var(--accent);flex:1">🔍 Инвентаризация</span>
+    <button onclick="aiInventRefresh()" style="border:none;background:0;font-size:13px;cursor:pointer;color:var(--accent);opacity:.6" title="Обновить">↺</button>
+    <button onclick="aiInventClose()" style="border:none;background:0;font-size:16px;cursor:pointer;color:var(--t3)">✕</button>
+  </div>
+  <div class="ai-issues-body on" id="aiInventBody"></div>
+</div>
 <div class="oper-scroll" id="operScroll"></div>
 </div>
 <div class="oper-imp-ov" id="operImpOv" onclick="if(event.target===this)operImportHide()">
@@ -718,7 +756,7 @@ function switchLoginTab(t){document.querySelectorAll('.login-tab').forEach(funct
 function loginPersonal(){var n=document.getElementById('personalName').value.trim();if(!n){alert('Введите имя');return}appMode='personal';userName=n;userId='u_'+simpleHash(n+'_personal');storagePrefix=APP_NAME+'_'+userId+'_';roomCode='';startApp()}
 function loginShared(){var n=document.getElementById('sharedName').value.trim();if(!n){alert('Введите имя');return}var c=document.getElementById('roomCodeInput').value.trim().toLowerCase();appMode='shared';userName=n;roomCode=c||generateRoomCode();userId='r_'+roomCode;storagePrefix=APP_NAME+'_'+userId+'_';startApp()}
 function tryLocalAutoLogin(){var m=localStorage.getItem(APP_NAME+'_lastMode'),u=localStorage.getItem(APP_NAME+'_lastUser'),r=localStorage.getItem(APP_NAME+'_lastRoom'),uid=localStorage.getItem(APP_NAME+'_lastUserId');if(m&&u&&uid){appMode=m;userName=u;userId=uid;roomCode=r||'';storagePrefix=APP_NAME+'_'+userId+'_';startApp();return true}return false}
-function startApp(){localStorage.setItem(APP_NAME+'_lastMode',appMode);localStorage.setItem(APP_NAME+'_lastUser',userName);localStorage.setItem(APP_NAME+'_lastUserId',userId);if(roomCode)localStorage.setItem(APP_NAME+'_lastRoom',roomCode);document.getElementById('loginScreen').classList.add('hidden');document.getElementById('appScreen').classList.remove('hidden');darkMode=localStorage.getItem('s7dark')==='1';applyDark();tab=localStorage.getItem(storagePrefix+'tab')||'day';sub=localStorage.getItem(storagePrefix+'sub')||'cards';proj=localStorage.getItem(storagePrefix+'proj')||'all';showInactive=localStorage.getItem(storagePrefix+'showInactive')==='1';loadLocal();if(!R.checks)R.checks={};if(!R.lastReset)R.lastReset='';if(!R.morning)R.morning=[];if(!R.evening)R.evening=[];if(!R.morning.length&&!R.evening.length){R.morning=JSON.parse(JSON.stringify(R_DEFAULTS.morning));R.evening=JSON.parse(JSON.stringify(R_DEFAULTS.evening))}var ne=document.getElementById('ne');if(ne)ne.value=notesText;resetExpiredToday();setTab(tab);rSB();initFirebase();initBottomSheetGesture();initSidebarSwipeGesture();initLogoDblTap();setTimeout(function(){startRealtimeSync();if(appMode==='shared'){toast('Комната: '+roomCode);document.getElementById('usersOnline').classList.remove('hidden')}},2000);setTimeout(checkOldData,4000)}
+function startApp(){localStorage.setItem(APP_NAME+'_lastMode',appMode);localStorage.setItem(APP_NAME+'_lastUser',userName);localStorage.setItem(APP_NAME+'_lastUserId',userId);if(roomCode)localStorage.setItem(APP_NAME+'_lastRoom',roomCode);document.getElementById('loginScreen').classList.add('hidden');document.getElementById('appScreen').classList.remove('hidden');darkMode=localStorage.getItem('s7dark')==='1';applyDark();tab=localStorage.getItem(storagePrefix+'tab')||'day';sub=localStorage.getItem(storagePrefix+'sub')||'cards';proj=localStorage.getItem(storagePrefix+'proj')||'all';showInactive=localStorage.getItem(storagePrefix+'showInactive')==='1';loadLocal();if(!R.checks)R.checks={};if(!R.lastReset)R.lastReset='';if(!R.morning)R.morning=[];if(!R.evening)R.evening=[];if(!R.morning.length&&!R.evening.length){R.morning=JSON.parse(JSON.stringify(R_DEFAULTS.morning));R.evening=JSON.parse(JSON.stringify(R_DEFAULTS.evening))}var ne=document.getElementById('ne');if(ne)ne.value=notesText;resetExpiredToday();setTab(tab);rSB();initFirebase();initBottomSheetGesture();initSidebarSwipeGesture();initLogoDblTap();setTimeout(function(){startRealtimeSync();if(appMode==='shared'){toast('Комната: '+roomCode);document.getElementById('usersOnline').classList.remove('hidden')}},2000);setTimeout(checkOldData,4000);aiKeyInit();}
 function toggleDark(){darkMode=!darkMode;localStorage.setItem('s7dark',darkMode?'1':'0');applyDark();haptic()}
 function applyDark(){document.documentElement.classList.toggle('dark',darkMode);var el=document.getElementById('dm-toggle');if(el)el.textContent=darkMode?'☀️ Дневной режим':'🌙 Ночной режим'}
 
@@ -973,7 +1011,7 @@ function rDay(){
   var items=getDayItems();
   var total=items.length,doneCount=items.filter(function(x){return x.checked}).length;
   var pct=total?Math.round(doneCount/total*100):0;
-  var h='<div class="day-prog"><div class="day-bar"><div class="day-bar-fill" style="width:'+pct+'%"></div></div><div class="day-pct">'+pct+'%</div></div>';
+  var h='<div class="day-prog"><div class="day-bar"><div class="day-bar-fill" style="width:'+pct+'%"></div></div><div class="day-pct">'+pct+'%</div><button onclick="aiBriefToggle()" style="border:none;background:0;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;padding:2px 6px;opacity:.8">✨</button></div>'+'<div class="ai-brief-block" id="aiBriefBlock" style="display:none"><div class="ai-brief-hdr" onclick="aiBriefToggle()"><span class="ai-brief-icon">✨</span><span class="ai-brief-label">Утренний брифинг</span><button class="ai-brief-refresh" onclick="event.stopPropagation();aiBriefRefresh()" title="Обновить">↺</button></div><div class="ai-brief-body" id="aiBriefBody"></div></div>';
   if(doneCount){h+='<div class="sh">Готово · '+doneCount+'<button onclick="tglShowDay()">'+(showDoneDay?'скрыть':'показать')+'</button></div>';}
   var blocks=[],blockMap={};
   items.forEach(function(it){var b=it.block||'today';if(!blockMap[b]){blockMap[b]={name:b,un:[],dn:[]};blocks.push(blockMap[b])}if(it.checked)blockMap[b].dn.push(it);else blockMap[b].un.push(it)});
@@ -1171,7 +1209,7 @@ function onAllSearch(q){allQ=q;rAll()}
 
 // ═══ RITUAL — standalone (TinyGesture drag) ═══
 function checkReset(){var now=new Date(),h=now.getHours(),today=now.toISOString().slice(0,10);var resetDay=h<6?new Date(now.getTime()-86400000).toISOString().slice(0,10):today;if(R.lastReset!==resetDay){R.checks={};R.lastReset=resetDay;saveAll()}}
-function rRitual(){var el=document.getElementById('rf');checkReset();var st=function(){var d=0,t=0;RBLOCKS.forEach(function(b){(R[b.key]||[]).forEach(function(it){t++;if(R.checks[it.id])d++})});return{done:d,total:t}}();var pct=st.total?Math.round(st.done/st.total*100):0;var h='<div class="r-prog"><div class="r-bar"><div class="r-bar-fill" style="width:'+pct+'%"></div></div><div class="r-cnt">'+st.done+'/'+st.total+'</div></div>';RBLOCKS.forEach(function(b){var items=R[b.key]||[];var bc=0;items.forEach(function(it){if(R.checks[it.id])bc++});h+='<div class="r-sec"><div class="r-sec-hdr">'+b.label+'<span class="r-sec-cnt">'+bc+'/'+items.length+'</span></div>';items.forEach(function(it){var ck=!!R.checks[it.id];var tp=it.link?'<a class="r-link" href="'+esc(it.link)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(it.text)+'</a>':'<div class="r-txt" contenteditable="true" data-rid="'+it.id+'" data-block="'+b.key+'" onblur="editR(this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(it.text)+'</div>';h+='<div class="r-item'+(ck?' checked':'')+'" data-rid="'+it.id+'" data-block="'+b.key+'"><div class="r-drag">'+GRIP+'</div><div class="r-chk'+(ck?' on':'')+'" onclick="event.stopPropagation();tglR(\''+it.id+'\')" ontouchend="event.stopPropagation();event.preventDefault();tglR(\''+it.id+'\')">'+CHK+'</div>'+tp+'<div class="r-del" onclick="delR(\''+b.key+'\',\''+it.id+'\')">'+XS+'</div></div>'});h+='<div class="r-add" onclick="addR(\''+b.key+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Добавить</div></div>'});el.innerHTML=h;initRitualDrag()}
+function rRitual(){var el=document.getElementById('rf');checkReset();var st=function(){var d=0,t=0;RBLOCKS.forEach(function(b){(R[b.key]||[]).forEach(function(it){t++;if(R.checks[it.id])d++})});return{done:d,total:t}}();var pct=st.total?Math.round(st.done/st.total*100):0;var h='<div class="r-prog"><div class="r-bar"><div class="r-bar-fill" style="width:'+pct+'%"></div></div><div class="r-cnt">'+st.done+'/'+st.total+'</div></div>';RBLOCKS.forEach(function(b){var items=R[b.key]||[];var bc=0;items.forEach(function(it){if(R.checks[it.id])bc++});h+='<div class="r-sec"><div class="r-sec-hdr">'+b.label+('')+'<span class="r-sec-cnt">'+bc+'/'+items.length+'</span></div>';items.forEach(function(it){var ck=!!R.checks[it.id];var tp=it.link?'<a class="r-link" href="'+esc(it.link)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'+esc(it.text)+'</a>':'<div class="r-txt" contenteditable="true" data-rid="'+it.id+'" data-block="'+b.key+'" onblur="editR(this)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur()}">'+esc(it.text)+'</div>';h+='<div class="r-item'+(ck?' checked':'')+'" data-rid="'+it.id+'" data-block="'+b.key+'"><div class="r-drag">'+GRIP+'</div><div class="r-chk'+(ck?' on':'')+'" onclick="event.stopPropagation();tglR(\''+it.id+'\')" ontouchend="event.stopPropagation();event.preventDefault();tglR(\''+it.id+'\')">'+CHK+'</div>'+tp+'<div class="r-del" onclick="delR(\''+b.key+'\',\''+it.id+'\')">'+XS+'</div></div>'});h+='<div class="r-add" onclick="addR(\''+b.key+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Добавить</div></div>'});el.innerHTML=h;initRitualDrag()}
 function tglR(id){R.checks[id]=!R.checks[id];haptic();saveAll();rRitual();if(tab==='day')rDay()}
 function addR(block){if(!R[block])R[block]=[];var id='r'+Date.now()+Math.random().toString(36).slice(2,5);R[block].push({id:id,text:''});saveAll();rRitual();setTimeout(function(){var el=document.querySelector('.r-txt[data-rid="'+id+'"]');if(el)el.focus()},50)}
 function editR(el){var id=el.dataset.rid,block=el.dataset.block,text=el.textContent.trim();var items=R[block]||[];var it=items.find(function(x){return x.id===id});if(!it)return;if(!text){delR(block,id);return}it.text=text;saveAll()}
@@ -1473,6 +1511,199 @@ function schImpDo(){
   });
   if(added){haptic();saveAll();schImpHide();rSched();toast('📅 Импортировано: '+added)}
   else toast('Ничего не нашёл')
+}
+
+
+// ═══ AI / CLAUDE ═══
+function aiKeySave(){
+  var v=document.getElementById('aiKeyInput').value.trim();
+  if(!v){toast('Введи API ключ');return}
+  localStorage.setItem('surf_ai_key',v);
+  toggleMenu();
+  toast('🔑 API ключ сохранён');
+}
+function aiGetKey(){return localStorage.getItem('surf_ai_key')||''}
+function aiKeyInit(){var k=aiGetKey();if(k){var el=document.getElementById('aiKeyInput');if(el)el.value=k.slice(0,8)+'...';}}
+
+async function callClaude(prompt,maxTokens){
+  var key=aiGetKey();
+  if(!key)throw new Error('API ключ не задан — открой меню ⋮ и сохрани ключ');
+  var r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-sonnet-4-6',
+      max_tokens:maxTokens||600,
+      messages:[{role:'user',content:prompt}]
+    })
+  });
+  var raw=await r.text();
+  if(!r.ok){
+    var msg='HTTP '+r.status;
+    try{var je=JSON.parse(raw);if(je&&je.error&&je.error.message)msg=je.error.message}catch(_){}
+    throw new Error(msg);
+  }
+  return JSON.parse(raw).content[0].text.trim();
+}
+
+// ── УТРЕННИЙ БРИФИНГ ──
+function aiBriefToggle(){
+  var block=document.getElementById('aiBriefBlock');
+  if(!block)return;
+  var visible=block.style.display!=='none';
+  if(visible){block.style.display='none';return}
+  block.style.display='';
+  var body=document.getElementById('aiBriefBody');
+  if(body.textContent.trim()==='')aiBriefLoad();
+}
+function aiBriefRefresh(){
+  localStorage.removeItem('surf_ai_brief_'+getToday());
+  document.getElementById('aiBriefBody').textContent='';
+  aiBriefLoad();
+}
+async function aiBriefLoad(){
+  var body=document.getElementById('aiBriefBody');
+  if(!body)return;
+  var cacheKey='surf_ai_brief_'+getToday();
+  var cached=localStorage.getItem(cacheKey);
+  if(cached){body.classList.add('on');body.textContent=cached;return}
+  if(!aiGetKey()){body.classList.add('on');body.textContent='API ключ не задан. Открой меню ⋮ → сохрани Claude API key.';return}
+  body.classList.add('on');
+  body.innerHTML='<span class="ai-brief-spin">⏳</span> Думаю...';
+  try{
+    var today=getToday();
+    var todayTasks=T.filter(function(t){return t.today===today&&!t.done});
+    var overdue=T.filter(function(t){return t.overdue&&!t.done});
+    var todaySched=SCHED.filter(function(e){return e.date===today});
+    var deptCounts={};T.filter(function(t){return!t.done}).forEach(function(t){var d=t.dept||'Без участка';deptCounts[d]=(deptCounts[d]||0)+1});
+    var topDepts=Object.entries(deptCounts).sort(function(a,b){return b[1]-a[1]}).slice(0,4).map(function(e){return e[0]+': '+e[1]}).join(', ');
+    var prompt='Ты помощник руководителя мебельного производства. Составь краткий утренний брифинг (4–6 строк, без заголовков, живым языком) на основе данных:\n\n';
+    prompt+='СЕГОДНЯ В ЗАДАЧАХ ('+todayTasks.length+' шт):\n';
+    todayTasks.slice(0,15).forEach(function(t){prompt+='- '+t.text+(t.project?' ['+t.project+']':'')+(t.assignee?' @'+t.assignee:'')+'\n'});
+    if(overdue.length){prompt+='\nПРОСРОЧЕНО (перешло со вчера, '+overdue.length+' шт):\n';overdue.slice(0,8).forEach(function(t){prompt+='- '+t.text+(t.project?' ['+t.project+']':'')+'\n'})}
+    if(todaySched.length){prompt+='\nМОНТАЖИ/ОТГРУЗКИ СЕГОДНЯ:\n';todaySched.forEach(function(e){prompt+='- '+e.text+(e.team?' — '+e.team:'')+'\n'})}
+    prompt+='\nЗАГРУЖЕННОСТЬ УЧАСТКОВ: '+topDepts+'\n';
+    prompt+='\nНапиши коротко и по делу. Укажи на что обратить внимание сегодня.';
+    var result=await callClaude(prompt,500);
+    localStorage.setItem(cacheKey,result);
+    body.textContent=result;
+  }catch(e){body.textContent='Ошибка: '+e.message}
+}
+
+// ── ЧТО ПРОВИСАЕТ ──
+var _aiIssuesOpen=false;
+function aiShowIssues(){
+  var block=document.getElementById('aiIssuesBlock');
+  if(!block)return;
+  if(_aiIssuesOpen){aiIssuesClose();return}
+  _aiIssuesOpen=true;
+  block.style.display='';
+  var body=document.getElementById('aiIssuesBody');
+  var cacheKey='surf_ai_issues_'+new Date().toISOString().slice(0,13); // кэш на час
+  var cached=localStorage.getItem(cacheKey);
+  if(cached){body.textContent=cached;return}
+  if(!aiGetKey()){body.textContent='API ключ не задан. Открой меню ⋮ → сохрани Claude API key.';return}
+  body.innerHTML='<span class="ai-brief-spin">⏳</span> Анализирую...';
+  aiIssuesLoad(cacheKey,body);
+}
+function aiIssuesRefresh(){
+  var body=document.getElementById('aiIssuesBody');
+  // clear all issue caches
+  for(var i=0;i<24;i++){
+    var d=new Date();d.setHours(d.getHours()-i);
+    localStorage.removeItem('surf_ai_issues_'+d.toISOString().slice(0,13));
+  }
+  body.innerHTML='<span class="ai-brief-spin">⏳</span> Анализирую...';
+  var cacheKey='surf_ai_issues_'+new Date().toISOString().slice(0,13);
+  aiIssuesLoad(cacheKey,body);
+}
+function aiIssuesClose(){
+  _aiIssuesOpen=false;
+  var block=document.getElementById('aiIssuesBlock');
+  if(block)block.style.display='none';
+}
+var _aiInventOpen=false;
+function aiShowInventory(){
+  var block=document.getElementById('aiInventBlock');
+  if(!block)return;
+  if(_aiInventOpen){aiInventClose();return}
+  // close issues if open
+  if(_aiIssuesOpen)aiIssuesClose();
+  _aiInventOpen=true;
+  block.style.display='';
+  var body=document.getElementById('aiInventBody');
+  var cacheKey='surf_ai_invent_'+new Date().toISOString().slice(0,16).replace('T','_'); // кэш 20 мин
+  // check cache (any key from last 20 min)
+  var now=new Date();
+  var cached=null;
+  for(var m=0;m<20;m++){
+    var d=new Date(now.getTime()-m*60000);
+    var k='surf_ai_invent_'+d.toISOString().slice(0,16).replace('T','_');
+    var v=localStorage.getItem(k);
+    if(v){cached=v;break}
+  }
+  if(cached){body.textContent=cached;return}
+  if(!aiGetKey()){body.textContent='API ключ не задан. Открой меню ⋮ → сохрани Claude API key.';return}
+  body.innerHTML='<span class="ai-brief-spin">⏳</span> Анализирую все задачи...';
+  aiInventLoad(cacheKey,body);
+}
+function aiInventRefresh(){
+  // clear all invent caches
+  Object.keys(localStorage).filter(function(k){return k.indexOf('surf_ai_invent_')===0}).forEach(function(k){localStorage.removeItem(k)});
+  var body=document.getElementById('aiInventBody');
+  body.innerHTML='<span class="ai-brief-spin">⏳</span> Анализирую все задачи...';
+  var cacheKey='surf_ai_invent_'+new Date().toISOString().slice(0,16).replace('T','_');
+  aiInventLoad(cacheKey,body);
+}
+function aiInventClose(){
+  _aiInventOpen=false;
+  var block=document.getElementById('aiInventBlock');
+  if(block)block.style.display='none';
+}
+async function aiInventLoad(cacheKey,body){
+  try{
+    var active=T.filter(function(t){return!t.done&&(showInactive||isProjectActive(t.project))});
+    var lines=active.map(function(t){
+      var parts=[t.text];
+      if(t.project)parts.push('['+t.project+']');
+      if(t.dept)parts.push('['+t.dept+']');
+      if(t.assignee)parts.push('@'+t.assignee);
+      if(t.overdue)parts.push('(\u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d\u0430)');
+      var age=t.ts?Math.floor((Date.now()-t.ts)/86400000):null;
+      if(age&&age>3)parts.push('('+age+'\u0434)');
+      return parts.join(' ');
+    });
+    var prompt='\u0422\u044b \u043f\u043e\u043c\u043e\u0449\u043d\u0438\u043a \u0440\u0443\u043a\u043e\u0432\u043e\u0434\u0438\u0442\u0435\u043b\u044f \u043c\u0435\u0431\u0435\u043b\u044c\u043d\u043e\u0433\u043e \u043f\u0440\u043e\u0438\u0437\u0432\u043e\u0434\u0441\u0442\u0432\u0430. \u041f\u0435\u0440\u0435\u0434 \u0442\u043e\u0431\u043e\u0439 \u0432\u0441\u0435 \u0430\u043a\u0442\u0438\u0432\u043d\u044b\u0435 \u0437\u0430\u0434\u0430\u0447\u0438 \u043a\u043e\u043c\u043f\u0430\u043d\u0438\u0438 ('+active.length+' \u0448\u0442). \u0421\u0434\u0435\u043b\u0430\u0439 \u0438\u043d\u0432\u0435\u043d\u0442\u0430\u0440\u0438\u0437\u0430\u0446\u0438\u044e: \u043f\u0440\u043e\u0430\u043d\u0430\u043b\u0438\u0437\u0438\u0440\u0443\u0439 \u043a\u0430\u0440\u0442\u0438\u043d\u0443 \u0446\u0435\u043b\u0438\u043a\u043e\u043c \u0438 \u043d\u0430\u043f\u0438\u0448\u0438 \u0440\u0435\u0437\u044e\u043c\u0435 \u0432 3 \u0447\u0430\u0441\u0442\u044f\u0445:\n\n1. \u041d\u0410 \u0427\u0422\u041e \u041e\u0411\u0420\u0410\u0422\u0418\u0422\u042c \u0412\u041d\u0418\u041c\u0410\u041d\u0418\u0415 (3\u20135 \u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u044b\u0445 \u043d\u0430\u0431\u043b\u044e\u0434\u0435\u043d\u0438\u0439)\n2. \u0412\u041e\u0417\u041c\u041e\u0416\u041d\u042b\u0415 \u041f\u0420\u041e\u0411\u041b\u0415\u041c\u042b \u0418 \u0420\u0418\u0421\u041a\u0418 (2\u20134 \u043f\u0443\u043d\u043a\u0442\u0430)\n3. \u041e\u0414\u0418\u041d \u0421\u041e\u0412\u0415\u0422 \u2014 \u0447\u0442\u043e \u0441\u0434\u0435\u043b\u0430\u0442\u044c \u043f\u0440\u044f\u043c\u043e \u0441\u0435\u0439\u0447\u0430\u0441\n\n\u0417\u0410\u0414\u0410\u0427\u0418:\n'+lines.join('\n')+'\n\n\u041f\u0438\u0448\u0438 \u043a\u043e\u0440\u043e\u0442\u043a\u043e, \u043a\u043e\u043d\u043a\u0440\u0435\u0442\u043d\u043e, \u043d\u0430\u0437\u044b\u0432\u0430\u0439 \u043f\u0440\u043e\u0435\u043a\u0442\u044b \u0438 \u0443\u0447\u0430\u0441\u0442\u043a\u0438 \u043f\u043e \u0438\u043c\u0435\u043d\u0438.';
+    var result=await callClaude(prompt,700);
+    localStorage.setItem(cacheKey,result);
+    body.textContent=result;
+  }catch(e){body.textContent='\u041e\u0448\u0438\u0431\u043a\u0430: '+e.message}
+}
+async function aiIssuesLoad(cacheKey,body){
+  try{
+    var now=Date.now();
+    var active=T.filter(function(t){return!t.done});
+    var noAssignee=active.filter(function(t){return!t.assignee&&t.dept&&t.dept!=='Без участка'});
+    var old=active.filter(function(t){return t.ts&&(now-t.ts)>7*86400000}); // > 7 дней
+    var noDate=SCHED.filter(function(e){return!e.date});
+    var deptCounts={};active.forEach(function(t){if(t.dept){deptCounts[t.dept]=(deptCounts[t.dept]||0)+1}});
+    var prompt='Ты помощник руководителя мебельного производства. Проанализируй данные и напиши список конкретных проблем и рисков (5–8 пунктов, каждый с новой строки, начиная с ❗ или ⚠️). Будь конкретен — называй задачи и участки.\n\n';
+    prompt+='ЗАДАЧИ БЕЗ ИСПОЛНИТЕЛЯ ПО УЧАСТКАМ ('+noAssignee.length+'):\n';
+    noAssignee.slice(0,12).forEach(function(t){prompt+='- '+t.text+' ['+t.dept+']\n'});
+    prompt+='\nЗАДАЧИ СТАРШЕ 7 ДНЕЙ ('+old.length+'):\n';
+    old.slice(0,12).forEach(function(t){prompt+='- '+t.text+(t.project?' ['+t.project+']':'')+(t.assignee?' @'+t.assignee:'')+'\n'});
+    prompt+='\nЗАГРУЖЕННОСТЬ УЧАСТКОВ: '+Object.entries(deptCounts).sort(function(a,b){return b[1]-a[1]}).map(function(e){return e[0]+' '+e[1]}).join(', ')+'\n';
+    if(noDate.length){prompt+='\nВ ГРАФИКЕ БЕЗ ДАТЫ (лист ожидания, '+noDate.length+'):\n';noDate.slice(0,6).forEach(function(e){prompt+='- '+e.text+'\n'})}
+    prompt+='\nНапиши только список проблем, без вводных слов.';
+    var result=await callClaude(prompt,600);
+    localStorage.setItem(cacheKey,result);
+    body.textContent=result;
+  }catch(e){body.textContent='Ошибка: '+e.message}
 }
 
 function doExport(){var groups={};T.forEach(function(t){if(!groups[t.project])groups[t.project]=[];groups[t.project].push(t)});var text='Surf · '+userName+'\n\n';Object.keys(groups).sort().forEach(function(p){text+=p+'\n';groups[p].forEach(function(t){text+='  '+(t.done?'✓':'○')+' '+t.text+(t.today===getToday()?' ⭐':'')+'\n'});text+='\n'});if(navigator.share)navigator.share({text:text}).catch(function(){});else{var b=new Blob([text],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='surf.txt';a.click();URL.revokeObjectURL(u)}toast('📦')}
