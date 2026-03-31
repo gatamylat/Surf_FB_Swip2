@@ -418,54 +418,51 @@ html.dark .bnav{background:rgba(26,26,29,.92);border-top-color:rgba(255,255,255,
 body,html{background:#fff!important;color:#000!important;height:auto!important;overflow:visible!important}
 .app{height:auto!important;overflow:visible!important}
 .app-main{overflow:visible!important;height:auto!important}
-/* Hide all chrome */
+/* Hide ALL chrome */
 .hdr,.bnav,.sb,.sb-ov,.ov,.menu-dd,.fab,.qadd,.sub-bar,.proj-bar,.ptabs,.oper-bar,.oper-chips,.oper-chips-wrap,.oper-chips-arrow,.oper-row-edit,.tedit-ov,.oper-imp-ov,.flow-filter,.sch-bar,.sch-btns,.sch-card-del,.sch-card-drag,.sch-card-edit,.sch-form-ov,.sch-imp-ov,.sht,.sch-clear-menu,.projPickOv,.teditOv,.ai-issues-block,.ai-brief-block,.ceh-bar,.ceh-sel-bar,.ceh-filters,.ceh-card-nav,.ceh-card-del,.ceh-chk,.cedit-ov,.ceh-clear-ov,.action-sheet-ov,.sch-legend,.ceh-empty,.users-online{display:none!important}
-/* Show active screens */
-.ov-screen,.ov-screen.on{display:block!important;overflow:visible!important;position:static!important;height:auto!important}
-.cehv.on{display:block!important;overflow:visible!important}
-.schv.on{display:block!important;overflow:visible!important}
+/* Hide ALL screens by default — only .print-now shows */
+.ov-screen,.schv,.cehv,.sampv,.dv,.cv,.lv,.pv,.tv,.fv,.nv,.rv,.av{display:none!important}
+.print-now{display:block!important;overflow:visible!important;position:static!important;height:auto!important}
 /* Unlock scrolls */
 .oper-scroll,.sch-scroll,.ceh-scroll{overflow:visible!important;padding:0!important}
 /* Print header */
-.print-hdr{display:block!important;text-align:center;padding:10px 0;border-bottom:3px solid #000}
-.print-hdr h1{font-size:18pt;margin:0}.print-hdr p{font-size:10pt;color:#666;margin:2px 0}
-/* ══ ОПЕР print (reference style) ══ */
+.print-hdr{display:block!important;text-align:center;padding:8px 0 6px;border-bottom:3px solid #000;margin-bottom:6px}
+.print-hdr h1{font-size:16pt;margin:0}.print-hdr p{font-size:9pt;color:#666;margin:2px 0}
+/* ══ ОПЕР ══ */
 .oper-sec{page-break-inside:avoid}
 .oper-sec-hdr{border-bottom:2px solid #000}
-.oper-sec-name{font-size:16pt;color:#000}
-.oper-row{border-bottom:1px solid #ccc}
-.oper-row-text{font-size:11pt;color:#000}
-.oper-tag{border:1px solid #999;background:#f5f5f5!important;color:#000!important}
-/* ══ ЦЕХ print — document style ══ */
-.ceh-sec{page-break-inside:avoid;margin-top:6px}
-.ceh-sec-hdr{position:static!important;background:#fff!important;border-bottom:2px solid #000;padding:10px 4px 4px}
-.ceh-sec-icon{display:none!important}
-.ceh-sec-name{font-size:14pt;color:#000}
-.ceh-sec-line{display:none!important}
-/* Hide done tasks */
+.oper-sec-name{font-size:14pt;color:#000}
+.oper-row{border-bottom:1px solid #ddd;padding:3px 0}
+.oper-row-text{font-size:10pt;color:#000}
+.oper-tag{border:1px solid #bbb;background:#f5f5f5!important;color:#333!important;font-size:8pt!important}
+/* ══ ЦЕХ ══ */
+.ceh-sec{page-break-inside:avoid;margin-top:2px}
+.ceh-sec-hdr{position:static!important;background:#fff!important;border-bottom:2px solid #000;padding:6px 0 2px}
+.ceh-sec-icon{display:none!important}.ceh-sec-line{display:none!important}
+.ceh-sec-name{font-size:12pt;color:#000}
+.ceh-sec-cnt{font-size:8pt;color:#333}
 .ceh-card.done,.ceh-done-hdr{display:none!important}
-.ceh-nodate-hdr{border-top:2px solid #000;margin-top:10px;padding-top:6px;font-size:11pt;color:#000}
-/* Cards → simple rows */
-.ceh-card{box-shadow:none!important;background:#fff!important;border:none!important;border-bottom:1px solid #ccc!important;border-radius:0!important;margin-bottom:0!important;padding:4px 0!important}
+.ceh-nodate-hdr{border-top:2px solid #000;margin-top:6px;padding-top:4px;font-size:9pt;color:#000}
+.ceh-card{box-shadow:none!important;background:#fff!important;border:none!important;border-bottom:1px solid #ddd!important;border-radius:0!important;margin:0!important;padding:2px 0!important}
 .ceh-stripe{display:none!important}
-.ceh-card-body{padding:4px 0!important}
-.ceh-card-text{font-size:11pt;color:#000}
-.ceh-card-tags{gap:6px!important}
-.ceh-tag{border:1px solid #999!important;background:#f5f5f5!important;color:#000!important;font-size:8pt!important}
-.ceh-card-dates{color:#333!important}
-.ceh-card-blocker{color:#c00!important;font-size:9pt!important}
-.ceh-card-row{gap:8px!important}
-/* ══ ГРАФИК print — document style ══ */
-.graf-day,.sch-day{page-break-inside:avoid}
-.sch-card{box-shadow:none!important;background:#fff!important;border:none!important;border-bottom:1px solid #ccc!important;border-radius:0!important;border-left:none!important;padding:3px 0!important}
-.sch-card-stripe{display:none!important}
-.sch-card-body{padding:3px 0!important}
-.sch-card-text{font-size:11pt;color:#000}
-.sch-card-team{color:#333!important;font-weight:normal!important}
-.sch-day-hdr{border-bottom:2px solid #000;color:#000!important;padding:10px 0 3px}
-.sch-day-hdr.today{color:#000!important;font-weight:700}
+.ceh-card-body{padding:2px 0!important}
+.ceh-card-text{font-size:10pt;color:#000}
+.ceh-card-tags{gap:4px!important}
+.ceh-tag{border:1px solid #bbb!important;background:#f5f5f5!important;color:#333!important;font-size:7pt!important}
+.ceh-card-dates{color:#555!important;font-size:7pt!important}
+.ceh-card-blocker{color:#c00!important;font-size:7pt!important}
+/* ══ ГРАФИК ══ */
+.sch-day{page-break-inside:avoid;margin-bottom:2px}
+.sch-day-hdr{border-bottom:2px solid #000;color:#000!important;padding:6px 0 2px;font-size:10pt}
+.sch-day-hdr.today{font-weight:700}
 .sch-day-line{display:none!important}
 .sch-empty{display:none!important}
+.sch-card{box-shadow:none!important;background:#fff!important;border:none!important;border-bottom:1px solid #ddd!important;border-radius:0!important;border-left:none!important;padding:2px 0!important}
+.sch-card-stripe{display:none!important}
+.sch-card-body{padding:1px 0!important}
+.sch-card-text{font-size:10pt;color:#000}
+.sch-card-team{color:#333!important;font-weight:normal!important;font-size:8pt!important}
+.sch-card-team span{color:#333!important;font-size:7pt!important;border-left:none!important}
 }
 /* ══ ОБРАЗЦЫ (Samples dashboard) ══ */
 .sampv{display:none;flex-direction:column;flex:1;overflow:hidden}.sampv.on{display:flex}
@@ -880,7 +877,7 @@ html.dark .ceh-tag-proj{background:rgba(255,255,255,.06)}
 </div>
 <!-- ═══ SCREEN: ЦЕХ ═══ -->
 <div class="cehv" id="v-ceh">
-<div class="ceh-bar"><div class="ceh-bar-left"><div class="ceh-modes"><button class="ceh-mode on" data-m="dept" onclick="setCehMode('dept')">По участкам</button><button class="ceh-mode" data-m="who" onclick="setCehMode('who')">По исполнителям</button></div></div><div class="ceh-bar-btns"><button class="ceh-bar-btn" onclick="cehCopy()">📋</button><button class="ceh-bar-btn" onclick="window.print()">🖨</button><button class="ceh-bar-btn" onclick="cehClearShow()">🗑</button><button class="ceh-bar-btn" onclick="cehAddNew()" style="font-weight:700;font-size:16px">+</button></div></div>
+<div class="ceh-bar"><div class="ceh-bar-left"><div class="ceh-modes"><button class="ceh-mode on" data-m="dept" onclick="setCehMode('dept')">По участкам</button><button class="ceh-mode" data-m="who" onclick="setCehMode('who')">По исполнителям</button></div></div><div class="ceh-bar-btns"><button class="ceh-bar-btn" onclick="cehCopy()">📋</button><button class="ceh-bar-btn" onclick="cehPrint()">🖨</button><button class="ceh-bar-btn" onclick="cehClearShow()">🗑</button><button class="ceh-bar-btn" onclick="cehAddNew()" style="font-weight:700;font-size:16px">+</button></div></div>
 <div class="ceh-sel-bar" id="cehSelBar"><span class="ceh-sel-cnt" id="cehSelCnt">0</span><button class="ceh-sel-btn ceh-sel-del" onclick="cehDelSel()">🗑 Удалить</button><button class="ceh-sel-btn ceh-sel-cancel" onclick="cehClearSel()">Отмена</button></div>
 <div class="ceh-filters" id="cehFilters"></div>
 <div class="ceh-scroll" id="cehScroll"></div>
@@ -1624,10 +1621,10 @@ function rSched(){
 // CEH card inside schedule view
 function schCehCardHTML(e){
   var c=cehAc(e.team);var icon=CEH_ICONS[e._dept]||'';
-  var contd='';if(e._totalDays>1)contd=' <span style="font-size:8px;color:var(--t3);font-weight:600">'+e._dayNum+'/'+e._totalDays+'</span>';
-  var blocker='';if(e._blocker)blocker='<span style="font-size:8px;color:var(--red);font-weight:600;margin-left:4px">⚠ '+esc(e._blocker)+'</span>';
-  var pi=P.findIndex(function(x){return x.name===e._project});var dc=pi>=0?CL[pi%CL.length]:'var(--t3)';
-  return '<div class="sch-card" data-sid="'+e.id+'" style="background:'+c.bg+';border-left:4px solid '+c.border+'"><div class="sch-card-stripe" style="background:var(--orange)"></div><div class="sch-card-body" onclick="ceditOpen(\''+e.id+'\')"><div class="sch-card-text">'+icon+' '+esc(e.text)+contd+'</div><div class="sch-card-team" style="color:'+c.solid+';font-weight:600">'+esc(e.team)+'<span style="margin-left:6px;font-weight:400;color:var(--t2);font-size:10px;border-left:3px solid '+dc+';padding-left:4px">'+esc(e._project||'')+'</span>'+blocker+'</div></div></div>';
+  var contd='';if(e._totalDays>1)contd=' <span style="font-size:9px;color:var(--t3);font-weight:600">'+e._dayNum+'/'+e._totalDays+'</span>';
+  var blocker='';if(e._blocker)blocker=' <span style="font-size:9px;color:var(--red);font-weight:500">⚠ '+esc(e._blocker)+'</span>';
+  var projLabel=e._project?esc(e._project)+' · ':'';
+  return '<div class="sch-card" data-sid="'+e.id+'" style="background:'+c.bg+';border-left:4px solid '+c.border+'"><div class="sch-card-stripe" style="background:var(--orange)"></div><div class="sch-card-body" onclick="ceditOpen(\''+e.id+'\')"><div class="sch-card-text">'+icon+' '+projLabel+esc(e.text)+contd+blocker+'</div><div class="sch-card-team" style="color:'+c.solid+';font-weight:600">'+esc(e.team)+' <span style="font-weight:400;color:var(--t3);font-size:10px">'+esc(e._dept)+'</span></div></div></div>';
 }
 
 function schCardHTML(e,ti,cardBg,teamStyle){return '<div class="sch-card" data-sid="'+e.id+'" style="'+cardBg+'"><div class="sch-card-drag" data-sid="'+e.id+'"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg></div><div class="sch-card-stripe" style="background:'+ti.color+'"></div><div class="sch-card-body"><div class="sch-card-type" style="color:'+ti.color+'">'+ti.label+'</div><div class="sch-card-text">'+esc(e.text)+'</div>'+(e.team?'<div class="sch-card-team" style="'+teamStyle+'">'+esc(e.team)+'</div>':'')+'</div><button class="sch-card-edit" onclick="schFormOpen(\''+e.id+'\')">&#9999;</button><button class="sch-card-del" onclick="schDel(\''+e.id+'\')">&#x2715;</button></div>';}
@@ -1727,7 +1724,7 @@ function schFormSave(){
   haptic();saveAll();schFormClose();rSched();
 }
 
-function schPrint(){window.print()}
+function schPrint(){document.getElementById('v-sched').classList.add('print-now');window.print();document.getElementById('v-sched').classList.remove('print-now')}
 function schCopy(){
   var today=getToday();
   var start=new Date();start.setHours(0,0,0,0);
@@ -2150,6 +2147,7 @@ function cehDelTask(id){var i=T.findIndex(function(x){return x.id===id});if(i>=0
 
 // Clear
 function cehClearShow(){document.getElementById('cehClearOv').classList.add('on')}
+function cehPrint(){document.getElementById('v-ceh').classList.add('print-now');window.print();document.getElementById('v-ceh').classList.remove('print-now')}
 function cehClearHide(){document.getElementById('cehClearOv').classList.remove('on')}
 function cehClearDo(w){
   if(w==='done'){T=T.filter(function(t){return!t.done||cehIdx(t.dept)<0})}
@@ -2306,7 +2304,7 @@ if(operMode==='obj'){
   });
 }
 if(!tasks.length)h+='<div style="text-align:center;padding:40px;color:var(--t3)">\u041d\u0435\u0442 \u0437\u0430\u0434\u0430\u0447</div>';el.innerHTML=h}
-function operPrint(){window.print()}
+function operPrint(){document.getElementById('v-oper').classList.add('print-now');window.print();document.getElementById('v-oper').classList.remove('print-now')}
 function operCopy(){var tasks=T.filter(function(t){return!t.done&&(showInactive||isProjectActive(t.project))});if(operDepts.length)tasks=tasks.filter(function(t){return operDepts.indexOf(t.dept)>=0});var d=new Date();var ds=('0'+d.getDate()).slice(-2)+'.'+('0'+(d.getMonth()+1)).slice(-2)+'.'+d.getFullYear();var txt='\ud83d\udccb \u041e\u041f\u0415\u0420\u0410\u0422\u0418\u0412\u041a\u0410 '+ds+'\n';
 if(operMode==='dept'){
   var deptGrp={};tasks.forEach(function(t){var dep=t.dept||'\u0411\u0435\u0437 \u0443\u0447\u0430\u0441\u0442\u043a\u0430';if(!deptGrp[dep])deptGrp[dep]=[];deptGrp[dep].push(t)});
