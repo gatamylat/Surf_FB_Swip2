@@ -451,29 +451,30 @@ body,html{background:#fff!important;color:#000!important;height:auto!important;o
 .ceh-tag{border:1px solid #bbb!important;background:#f5f5f5!important;color:#333!important;font-size:7pt!important}
 .ceh-card-dates{color:#555!important;font-size:7pt!important}
 .ceh-card-blocker{color:#c00!important;font-size:7pt!important}
-/* ══ ГРАФИК ══ */
-.sch-day{margin-bottom:2px}
-.sch-day-hdr{border-bottom:2px solid #000;color:#000!important;padding:6px 0 2px;font-size:12pt}
-.sch-day-hdr.today{font-weight:700}
+/* ══ ГРАФИК print — compact table ══ */
+.sch-day{margin:0}
+.sch-day-hdr{border-bottom:2px solid #000;color:#000!important;padding:6px 0 1px;font-size:12pt;font-weight:700;margin-top:4px}
+.sch-day-hdr.today{text-decoration:underline}
 .sch-day-line{display:none!important}
 .sch-empty{display:none!important}
 .sch-day-noevt{display:none!important}
-.sch-card{box-shadow:none!important;background:#fff!important;border:none!important;border-radius:0!important;border-left:none!important;padding:0!important}
+/* Hide CEH screen cards in print (replaced by grouped print) */
+.sch-card.sch-ceh-card{display:none!important}
+/* Regular schedule cards — clean print style */
+.sch-card:not(.sch-ceh-card){box-shadow:none!important;background:#fff!important;border:none!important;border-bottom:1px solid #ddd!important;border-radius:0!important;border-left:none!important;padding:1px 0!important}
 .sch-card-stripe{display:none!important}
 .sch-card-body{padding:1px 0!important}
-.sch-card-text{font-size:10pt;color:#000}
+.sch-card-text{font-size:9pt;color:#000}
 .sch-card-team{color:#333!important;font-weight:normal!important;font-size:8pt!important}
-.sch-card-team span{color:#333!important;font-size:7pt!important;border-left:none!important}
-/* Print grouping */
-.sch-grp-dept{display:block!important;font-size:11pt;font-weight:700;color:#000;padding:6px 0 2px;border-bottom:1.5px solid #666;margin-top:4px}
-.sch-grp-who{display:block!important;font-size:9pt;font-weight:600;color:#333;padding:3px 0 1px 8px}
-.sch-grp-task{display:block!important;border-bottom:1px solid #ddd;padding:2px 0 2px 16px;font-size:9pt;color:#000}
-.sch-grp-task .sch-grp-proj{display:inline!important;font-weight:600}
-.sch-grp-task .sch-grp-text{font-weight:normal}
-.sch-grp-task .sch-grp-contd{font-size:7pt;color:#666}
-.sch-grp-task .sch-grp-blocker{font-size:8pt;color:#c00;font-weight:500}
-/* Hide screen-style ceh cards in print, show grouped rows */
-.sch-card.sch-ceh-card{display:none!important}
+/* Print grouping — compact table */
+.sch-grp-dept{display:block!important;font-size:9pt;font-weight:700;color:#000;padding:3px 0 0;border-bottom:1px solid #999;margin-top:2px}
+.sch-grp-who{display:block!important;font-size:8pt;font-weight:600;color:#000;padding:1px 0 0 4px;text-decoration:underline;text-decoration-thickness:0.5px;text-underline-offset:2px}
+.sch-grp-task{display:table!important;width:100%;table-layout:auto;padding:0;margin:0;border-bottom:1px solid #eee;font-size:8pt;line-height:1.3;color:#000}
+.sch-grp-task>span{display:table-cell!important;vertical-align:top;padding:1px 4px 1px 8px}
+.sch-grp-task .sch-grp-proj{font-weight:600;white-space:nowrap;width:1%;padding-left:8px}
+.sch-grp-task .sch-grp-text{font-weight:400}
+.sch-grp-task .sch-grp-contd{font-size:7pt;color:#666;text-align:right;white-space:nowrap;width:1%}
+.sch-grp-task .sch-grp-blocker{font-size:7pt;color:#c00;font-weight:500;white-space:nowrap;width:1%}
 .sch-day{page-break-inside:avoid}
 }
 /* ══ ОБРАЗЦЫ (Samples dashboard) ══ */
@@ -825,6 +826,7 @@ html.dark .ceh-tag-proj{background:rgba(255,255,255,.06)}
   </div>
 </div>
 <div class="sch-legend" id="schLegend"></div>
+<div class="print-hdr" id="schPrintHdr"><h1>📅 ГРАФИК</h1><p id="schPrintSub"></p></div>
 <div class="sch-scroll" id="schScroll"></div>
 </div>
 
@@ -894,6 +896,7 @@ html.dark .ceh-tag-proj{background:rgba(255,255,255,.06)}
 <div class="ceh-bar"><div class="ceh-bar-left"><div class="ceh-modes"><button class="ceh-mode on" data-m="dept" onclick="setCehMode('dept')">По участкам</button><button class="ceh-mode" data-m="who" onclick="setCehMode('who')">По исполнителям</button></div></div><div class="ceh-bar-btns"><button class="ceh-bar-btn" onclick="cehCopy()">📋</button><button class="ceh-bar-btn" onclick="cehPrint()">🖨</button><button class="ceh-bar-btn" onclick="cehClearShow()">🗑</button><button class="ceh-bar-btn" onclick="cehAddNew()" style="font-weight:700;font-size:16px">+</button></div></div>
 <div class="ceh-sel-bar" id="cehSelBar"><span class="ceh-sel-cnt" id="cehSelCnt">0</span><button class="ceh-sel-btn ceh-sel-del" onclick="cehDelSel()">🗑 Удалить</button><button class="ceh-sel-btn ceh-sel-cancel" onclick="cehClearSel()">Отмена</button></div>
 <div class="ceh-filters" id="cehFilters"></div>
+<div class="print-hdr" id="cehPrintHdr"><h1>🏭 ЦЕХ</h1><p id="cehPrintSub"></p></div>
 <div class="ceh-scroll" id="cehScroll"></div>
 </div>
 <!-- ══ BOTTOM NAV ══ -->
@@ -1606,7 +1609,8 @@ function rSched(){
   var map={};evts.forEach(function(e){if(!map[e.date])map[e.date]=[];map[e.date].push(e)});
   var hasAny=schedFiltered.length>0||cehEntries.length>0||cehNoDate.length>0;
   var typeLabels={all:'Все',montazh:'Монтажи',otgruzka:'Отгрузки',ceh:'Цех'};
-  var h='<div class="print-hdr"><h1>📅 ГРАФИК</h1><p>'+new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+( typeLabels[schTypeFilter]||'Все')+' · 2 недели</p></div>';
+  var psub=document.getElementById('schPrintSub');if(psub)psub.textContent=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+(typeLabels[schTypeFilter]||'Все')+' · 2 недели';
+  var h='';
   if(noDate.length){
     h+='<div class="sch-day"><div class="sch-day-hdr" style="color:var(--orange)">Лист ожидания<div class="sch-day-line"></div></div>';
     var ndCeh=[],ndOther=[];
@@ -1660,10 +1664,10 @@ function schCehPrintGroupHTML(cehEvts){
     Object.keys(byWho).sort().forEach(function(who){
       h+='<div class="sch-grp-who">'+esc(who)+'</div>';
       byWho[who].forEach(function(e){
-        var contd='';if(e._totalDays>1)contd=' <span class="sch-grp-contd">'+e._dayNum+'/'+e._totalDays+'</span>';
-        var blocker='';if(e._blocker)blocker=' <span class="sch-grp-blocker">⚠ '+esc(e._blocker)+'</span>';
+        var contd=e._totalDays>1?e._dayNum+'/'+e._totalDays:'';
+        var blocker=e._blocker?'⚠ '+esc(e._blocker):'';
         var proj=e._project||'';
-        h+='<div class="sch-grp-task"><span class="sch-grp-proj">'+esc(proj)+'</span> <span class="sch-grp-text">'+esc(e.text)+'</span>'+contd+blocker+'</div>';
+        h+='<div class="sch-grp-task"><span class="sch-grp-proj">'+esc(proj)+'</span><span class="sch-grp-text">'+esc(e.text)+'</span><span class="sch-grp-contd">'+contd+'</span><span class="sch-grp-blocker">'+blocker+'</span></div>';
       });
     });
   });
@@ -2227,7 +2231,8 @@ function rCeh(){
   var withDate=active.filter(function(t){return!!t.dateStart}),noDate=active.filter(function(t){return!t.dateStart});
   var el=document.getElementById('cehScroll');if(!el)return;
   var modeLabel=cehMode==='dept'?'по участкам':'по исполнителям';
-  var h='<div class="print-hdr"><h1>🏭 ЦЕХ</h1><p>'+new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+modeLabel+' · '+active.length+' изделий</p></div>';
+  var psub=document.getElementById('cehPrintSub');if(psub)psub.textContent=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'})+' · '+modeLabel+' · '+active.length+' изделий';
+  var h='';
 
   if(cehMode==='dept'){
     CEH_CHAIN.forEach(function(dept){
