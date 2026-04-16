@@ -999,7 +999,7 @@ function getToday(){return new Date().toISOString().slice(0,10)}
 function simpleHash(str){let h=0;for(let i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h=h&h}return Math.abs(h).toString(36)}
 function generateRoomCode(){const c='abcdefghjkmnpqrstuvwxyz23456789';let code='';for(let i=0;i<6;i++)code+=c[Math.floor(Math.random()*c.length)];return code}
 function esc(s){var d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function linkify(s){return esc(s||'').replace(/(https?:\/\/[^\s<>"']+)/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener" class="r-inline-link" contenteditable="false" onclick="event.stopPropagation();event.preventDefault();window.open(this.href,\'_blank\',\'noopener\')">'+u+'</a>'})}
+function linkify(s){return esc(s||'').replace(/(https?:\/\/[^\s<>"']+)/g,function(u){return '<a href="'+u+'" target="_blank" rel="noopener" class="r-inline-link" contenteditable="false" ontouchstart="event.stopPropagation()" ontouchend="event.stopPropagation()" onclick="event.stopPropagation();event.preventDefault();window.open(this.href,\'_blank\',\'noopener\')">'+u+'</a>'})}
 function isMobile(){return window.innerWidth<600||'ontouchstart' in window||navigator.maxTouchPoints>0}
 function pC(i){return CL[((i%CL.length)+CL.length)%CL.length]}
 function resetExpiredToday(){var today=getToday(),changed=false;T.forEach(function(t){if(t.today&&t.today!==today){if(!t.done){t.today=today;t.overdue=true}else{t.today='';t.unplanned=false}changed=true}if(t.dateStart===undefined){t.dateStart='';t.dateEnd='';t.blocker='';t.log=[];changed=true}});PT.forEach(function(t){if(t.today&&t.today!==today){if(!t.done){t.today=today;t.overdue=true}else{t.today='';t.unplanned=false}changed=true}});if(changed)saveAll()}
@@ -1340,7 +1340,7 @@ function swiHTML(it){
   if(it.type==='personal')projH='<span class="sw-proj">личная</span>';
   var fireH=it.unplanned?'<span style="font-size:11px">🔥</span>':'';
   var overdueH=it.overdue&&!it.checked?'<span class="sw-overdue">вчера</span>':'';
-  var textH=it.link?'<a class="sw-link" href="'+esc(it.link)+'" target="_blank" onclick="event.stopPropagation()">'+esc(it.text)+'</a>':'<span class="sw-txt">'+esc(it.text)+'</span>';
+  var textH=it.link?'<a class="sw-link" href="'+esc(it.link)+'" target="_blank" onclick="event.stopPropagation()">'+esc(it.text)+'</a>':'<span class="sw-txt">'+linkify(it.text)+'</span>';
   return'<div class="swi '+cls+'" data-id="'+it.id+'" data-type="'+it.type+'"><div class="swa swa-l"></div><div class="swa swa-r"></div><div class="swc">'+priH+'<div class="sw-chk '+chk+'">'+CHK+'</div>'+textH+fireH+overdueH+projH+'</div></div>';
 }
 function dayToggle(id,type,fromSwipe){
