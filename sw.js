@@ -1,5 +1,5 @@
-// Surf PWA Service Worker v16
-var CACHE = 'surf-v16';
+// Surf PWA Service Worker v17
+var CACHE = 'surf-v17';
 var ASSETS = [
   './',
   './index.html',
