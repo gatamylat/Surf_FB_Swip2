@@ -1,5 +1,5 @@
-// Surf PWA Service Worker v13
-var CACHE = 'surf-v14';
+// Surf PWA Service Worker v15
+var CACHE = 'surf-v15';
 var ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,11 @@ var ASSETS = [
 self.addEventListener('install', function(e) {
   e.waitUntil(
     caches.open(CACHE).then(function(cache) {
-      return cache.addAll(ASSETS);
+      // по одному: недоступность внешнего адреса (шрифты, CDN) не должна
+      // срывать установку целиком — иначе приложение не откроется офлайн
+      return Promise.all(ASSETS.map(function(u) {
+        return cache.add(u).catch(function() {});
+      }));
     }).then(function() {
       return self.skipWaiting();
     })
